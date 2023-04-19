@@ -32,7 +32,7 @@ public class SearchFileIsDirectoryImpl implements SearchFileIsDirectory {
         searchF(files);
 
         try {
-            Thread.sleep(400);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
