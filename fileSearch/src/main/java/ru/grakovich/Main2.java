@@ -17,10 +17,16 @@ import java.util.concurrent.Executors;
 public class Main2 {
     public static void main(String[] args) {
         String fileName = args.length > 0 ? args[0] : "*myfi*";
-        File file = new File(args.length > 1 ? args[1]:"D:\\java");
+        File file = new File(args.length > 1 ? args[1]:"D:\\");
         ExecutorService executorService = Executors.newFixedThreadPool(5);
-        SearchFileIsDirectory searchFileIsDirectory = new SearchFileIsDirectoryImpl(executorService, file,fileName);
-        List<File> files = searchFileIsDirectory.files();
+        SearchFileIsDirectoryImpl searchFileIsDirectoryImpl = new SearchFileIsDirectoryImpl(executorService, file,fileName);
+        searchFileIsDirectoryImpl.searchF(file.listFiles());
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        List<File> files = searchFileIsDirectoryImpl.files();
         OutFiles outFiles = new OutputToConsole();
         outFiles.outputFiles(files);
 

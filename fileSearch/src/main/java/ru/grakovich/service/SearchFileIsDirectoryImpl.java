@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Grakovich 18.04.2023
  */
-public class SearchFileIsDirectoryImpl implements SearchFileIsDirectory {
+public class SearchFileIsDirectoryImpl{
 
 
     private final ExecutorService executorService;
@@ -26,20 +26,13 @@ public class SearchFileIsDirectoryImpl implements SearchFileIsDirectory {
     }
 
 
-    @Override
+
     public List<File> files() {
 
-        searchF(files);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return fileList;
     }
 
-    private void searchF(File[] files) {
+    public void searchF(File[] files) {
 
         Runnable runnable = () -> {
             for (File i:files) {
