@@ -23,6 +23,7 @@ public class SearchFileIsDirectory implements SearchFile {
         this.file = file;
         this.search = search;
     }
+
     @Override
     public List<File> files() {
         ExecutorService executorService = Executors.newFixedThreadPool(5);
@@ -30,26 +31,7 @@ public class SearchFileIsDirectory implements SearchFile {
         if (taskEnd()) {
             executorService.shutdown();
         }
-
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new IllegalArgumentException(" Ошибка ожидания потоков");
-        }
-        if (!executorService.isShutdown())
-            executorService.shutdown();
         return fileList;
-    }
-
-    private boolean taskEnd() {
-        boolean result = false;
-        while (!result) {
-            result = true;
-            for (Future<?> future : taskList) {
-                result &= future.isDone();
-            }
-        }
-        return result;
     }
 
     private void searchF(File file, ExecutorService executorService) {
@@ -66,5 +48,16 @@ public class SearchFileIsDirectory implements SearchFile {
             }
         };
         taskList.add(executorService.submit(runnable));
+    }
+
+    private boolean taskEnd() {
+        boolean temp;
+        do {
+            temp = true;
+            for (Future<?> future : taskList) {
+                temp &= future.isDone();
+            }
+        } while (!temp);
+        return true;
     }
 }
