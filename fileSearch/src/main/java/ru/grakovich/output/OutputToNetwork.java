@@ -18,6 +18,7 @@ public class OutputToNetwork implements OutFiles {
     @Override
     public void outputFiles(List<File> files) {
         if(files.size()==0) {
+            System.out.println("not file");
             return;
         }
         for (File file : files){
