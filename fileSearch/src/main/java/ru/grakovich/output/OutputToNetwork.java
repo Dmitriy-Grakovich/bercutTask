@@ -48,7 +48,7 @@ public class OutputToNetwork implements OutFiles {
             dataOutputStream.write(fileContentBytes);
 
         } catch (IOException e) {
-            throw new IllegalArgumentException("Передача не состоялась");
+            throw new IllegalArgumentException("Сервер не найден");
         }
     }
 }
