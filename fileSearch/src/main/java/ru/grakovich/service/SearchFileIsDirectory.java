@@ -36,7 +36,8 @@ public class SearchFileIsDirectory implements SearchFile {
         } catch (InterruptedException e) {
             throw new IllegalArgumentException(" Ошибка ожидания потоков");
         }
-        executorService.shutdown();
+        if (!executorService.isShutdown())
+            executorService.shutdown();
         return fileList;
     }
 
