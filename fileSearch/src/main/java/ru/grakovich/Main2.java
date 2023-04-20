@@ -15,21 +15,15 @@ import java.util.concurrent.Executors;
  */
 public class Main2 {
     public static void main(String[] args) {
-        String fileName = args.length > 0 ? args[0] : "*myfi*";
-        File file = new File(args.length > 1 ? args[1] : "D:\\");
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
-        SearchFileIsDirectory searchFileIsDirectory = new SearchFileIsDirectory(executorService, fileName);
-        searchFileIsDirectory.searchF(file.listFiles());
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        List<File> files = searchFileIsDirectory.files();
-        OutFiles outFiles = new OutputToConsole();
-        outFiles.outputFiles(files);
 
-        executorService.shutdown();
+        String fileName = args.length > 0 ? args[0] : "*myfi*";
+        File file = new File(args.length > 1 ? args[1] : "D:\\java");
+
+        SearchFileIsDirectory searchFileIsDirectory = new SearchFileIsDirectory(file, fileName);
+
+        OutFiles outFiles = new OutputToConsole();
+        outFiles.outputFiles(searchFileIsDirectory.files());
+
 
     }
 }

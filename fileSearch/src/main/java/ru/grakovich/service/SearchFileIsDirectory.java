@@ -3,47 +3,67 @@ package ru.grakovich.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.Objects;
+import java.util.concurrent.*;
 
 
 /**
  * @author Grakovich 18.04.2023
  */
-public class SearchFileIsDirectory {
+
+public class SearchFileIsDirectory implements SearchFile {
 
 
-    private final ExecutorService executorService;
+    private final File file;
     private final List<File> fileList = new ArrayList<>();
     private final String search;
+    private final CopyOnWriteArraySet<Future<?>> taskList = new CopyOnWriteArraySet<>();
 
-
-    public SearchFileIsDirectory(ExecutorService executorService, String search) {
-        this.executorService = executorService;
+    public SearchFileIsDirectory(File file, String search) {
+        this.file = file;
         this.search = search;
-
     }
-
+    @Override
     public List<File> files() {
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        searchF(file, executorService);
+        if (taskEnd()) {
+            executorService.shutdown();
+        }
 
+        try {
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new IllegalArgumentException(" Ошибка ожидания потоков");
+        }
+        executorService.shutdown();
         return fileList;
     }
 
-    public void searchF(File[] files) {
+    private boolean taskEnd() {
+        boolean result = false;
+        while (!result) {
+            result = true;
+            for (Future<?> future : taskList) {
+                result &= future.isDone();
+            }
+        }
+        return result;
+    }
+
+    private void searchF(File file, ExecutorService executorService) {
 
         Runnable runnable = () -> {
-            for (File i : files) {
-                if (i.isDirectory()) {
-                    searchF(i.listFiles());
-                } else {
-
-                    if ((i.getName().contains((search.replaceAll("[*]", ""))))) {
-                        fileList.add(i);
-                    }
+            if (file.isDirectory()) {
+                for (File i : Objects.requireNonNull(file.listFiles())) {
+                    searchF(i, executorService);
+                }
+            } else {
+                if ((file.getName().contains((search.replaceAll("[*]", ""))))) {
+                    fileList.add(file);
                 }
             }
         };
-        executorService.submit(runnable);
+        taskList.add(executorService.submit(runnable));
     }
-
-
 }

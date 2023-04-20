@@ -14,8 +14,6 @@ public class OutputToConsole implements OutFiles {
             System.out.println("not file");
             return;
         }
-        for (File i : files) {
-            System.out.println(i.getAbsoluteFile());
-        }
+        files.forEach(System.out::println);
     }
 }
